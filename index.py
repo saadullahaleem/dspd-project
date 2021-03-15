@@ -5,7 +5,11 @@ app = Flask(__name__)
 api = Api(app)
 
 
-class Quotes(Resource):
+class PricePredictorView(Resource):
+    """
+    This view will eventually integrate the model.
+    For now it sends sample json data 
+    """
     def get(self):
         return {
             'William Shakespeare': {
