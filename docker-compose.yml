@@ -10,4 +10,5 @@ services:
       dockerfile: Dockerfile
     image: dspd_project_api
     ports:
-      - "2000:2000"
+      - "5000:5000"
+    command: ["python", "index.py"]
