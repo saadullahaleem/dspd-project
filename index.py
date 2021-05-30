@@ -3,7 +3,6 @@ import tensorflow as tf
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import joblib
-from sklearn.preprocessing import MinMaxScaler
 from pandas import DataFrame
 from helpers import series_to_supervised
 from numpy import concatenate
@@ -65,11 +64,11 @@ Sample Data
 """
 
 parser = reqparse.RequestParser()
-parser.add_argument('close_price', type=int, action='append')
-parser.add_argument('polarity', type=int, action='append')
-parser.add_argument('sensitivity', type=int, action='append')
-parser.add_argument('tweet_vol', type=int, action='append')
-parser.add_argument('volume_btc', type=int, action='append')
+parser.add_argument('close_price', type=int, action='append', required=True)
+parser.add_argument('polarity', type=int, action='append', required=True)
+parser.add_argument('sensitivity', type=int, action='append', required=True)
+parser.add_argument('tweet_vol', type=int, action='append', required=True)
+parser.add_argument('volume_btc', type=int, action='append', required=True)
 
 class PricePredictorView(Resource):
     """
