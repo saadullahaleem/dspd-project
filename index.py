@@ -72,8 +72,9 @@ parser.add_argument('volume_btc', type=int, action='append', required=True)
 
 class PricePredictorView(Resource):
     """
-    This view will eventually integrate the model.
-    For now it sends sample json data 
+    This view integrates our LSTM price prediction model.
+    It takes the user input, transforms it using the learnt scalar data, makes a prediction
+    and then performs an inverse transform to get the predicted values.
     """
 
     def post(self):
@@ -106,7 +107,7 @@ class PricePredictorView(Resource):
             }
 
 
-api.add_resource(PricePredictorView, '/')
+api.add_resource(PricePredictorView, '/api')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port="5000", debug=True)
