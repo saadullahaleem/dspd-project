@@ -77,26 +77,33 @@ class PricePredictorView(Resource):
     """
 
     def post(self):
-        args = parser.parse_args()
-        data = dict(args)
-        df = DataFrame(data)
-        model = tf.keras.models.load_model('./bitcoin_lstm_prediction_model.h5')
-        scaler = joblib.load('./scalar_data.joblib')
-        scaled = scaler.transform(df.values)
-        reframed = series_to_supervised(scaled, 4, 2)
-        input_data = reframed.values
-        input_data.shape = (1, input_data.shape[0], input_data.shape[1])
-        prediction = model.predict(input_data[:, 1:, :5])
-        prediction_for_inv_transform = concatenate(
-            (prediction, reframed[:1][["var2(t+1)", "var3(t+1)", "var4(t+1)", "var5(t+1)"]]), axis=1)
-        inv_transform = scaler.inverse_transform(prediction_for_inv_transform)[0]
-        return {
-            "close_price": inv_transform[0],
-            "polarity": inv_transform[1],
-            "sensitivity": inv_transform[2],
-            "tweet_vol": inv_transform[3],
-            "volume_btc": inv_transform[4]
-        }
+        try:
+            args = parser.parse_args()
+            data = dict(args)
+            df = DataFrame(data)
+            model = tf.keras.models.load_model('./bitcoin_lstm_prediction_model.h5')
+            scaler = joblib.load('./scalar_data.joblib')
+            scaled = scaler.transform(df.values)
+            reframed = series_to_supervised(scaled, 4, 2)
+            input_data = reframed.values
+            input_data.shape = (1, input_data.shape[0], input_data.shape[1])
+            prediction = model.predict(input_data[:, 1:, :5])
+            prediction_for_inv_transform = concatenate(
+                (prediction, reframed[:1][["var2(t+1)", "var3(t+1)", "var4(t+1)", "var5(t+1)"]]), axis=1)
+            inv_transform = scaler.inverse_transform(prediction_for_inv_transform)[0]
+            return {
+                "close_price": inv_transform[0],
+                "polarity": inv_transform[1],
+                "sensitivity": inv_transform[2],
+                "tweet_vol": inv_transform[3],
+                "volume_btc": inv_transform[4]
+            }
+        except Exception as e:
+            app.logger.error('Error occurred ', str(e))
+            return {
+                "Message": "An error occurred",
+                "Stacktrace": str(e)
+            }
 
 
 api.add_resource(PricePredictorView, '/')
